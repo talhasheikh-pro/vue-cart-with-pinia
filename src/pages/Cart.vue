@@ -39,9 +39,9 @@ const proceedToCheckout = () => {
           <!-- headers -->
           <header class="grid grid-cols-6 gap-4 items-center mb-12">
             <div class="col-span-3 text-xl font-semibold">Product</div>
-            <div class="text-xl font-semibold">Price</div>
-            <div class="text-xl font-semibold">Quantity</div>
-            <div class="text-xl font-semibold">Total</div>
+            <div class="hidden md:block text-xl font-semibold">Price</div>
+            <div class="hidden md:block text-xl font-semibold">Quantity</div>
+            <div class="hidden md:block text-xl font-semibold">Total</div>
           </header>
 
           <!-- items -->
