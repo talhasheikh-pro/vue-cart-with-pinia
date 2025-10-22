@@ -1,0 +1,98 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import type { Product } from "@/lib/types/product";
+import { formatCurrency } from "@/lib/utils";
+import { Plus, Minus, X } from "lucide-vue-next";
+
+const { product } = defineProps<{ product: Product }>();
+const emit = defineEmits<{
+  (e: "remove"): void;
+  (e: "changeQty", qty: number): void;
+}>();
+
+const qty = computed(() => product.quantity ?? 1);
+const unitPrice = computed(() => product.price ?? 0);
+const total = computed(() => unitPrice.value * qty.value);
+
+function onDecrement() {
+  if (qty.value > 1) emit("changeQty", qty.value - 1);
+}
+
+function onIncrement() {
+  emit("changeQty", qty.value + 1);
+}
+
+function onRemove() {
+  emit("remove");
+}
+</script>
+
+<template>
+  <div
+    class="grid grid-cols-6 items-center gap-4 border-b border-slate-200 pb-4"
+  >
+    <div class="col-span-3 flex items-start gap-4">
+      <div class="relative h-20 w-20 shrink-0 rounded-lg bg-slate-200">
+        <img
+          v-if="product.image"
+          :src="product.image"
+          :alt="product.title"
+          class="h-full w-full rounded-lg object-cover"
+        />
+        <!-- small circle 'x' -->
+        <button
+          @click="onRemove"
+          class="absolute -top-1 p-1 -right-1 flex h-5 w-5 font-bold items-center justify-center rounded-full bg-black text-[10px] text-white hover:opacity-90"
+          aria-label="Remove"
+        >
+          <X />
+        </button>
+      </div>
+
+      <div class="space-y-1">
+        <h3 class="text-sm font-semibold text-gray-900">
+          {{ product.title }}
+        </h3>
+        <p class="text-sm text-gray-400" v-if="product.category">
+          Category:
+          <span class="ml-1">
+            {{ product.category ?? "—" }}
+          </span>
+        </p>
+        <p class="text-sm text-gray-400" v-if="product.rating">
+          Rating:
+          <span class="ml-1">
+            {{ product.rating.rate }}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <span>
+      {{ formatCurrency(unitPrice) }}
+    </span>
+
+    <!-- Quantity modifier -->
+    <div>
+      <div class="inline-flex items-center bg-slate-100/60">
+        <button
+          class="px-1 py-1 text-sm bg-slate-200 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="qty <= 1"
+          @click="onDecrement"
+        >
+          <Minus class="h-2 w-2" />
+        </button>
+        <span class="select-none px-3 text-xs text-gray-600">
+          {{ qty }}
+        </span>
+        <button class="px-1 py-1 text-sm bg-slate-200 cursor-pointer" @click="onIncrement">
+          <Plus class="h-2 w-2" />
+        </button>
+      </div>
+    </div>
+
+    <span>
+      {{ formatCurrency(total) }}
+    </span>
+  </div>
+</template>
