@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { computed, ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import Product from "@/components/Product.vue";
 import Button from "@/components/Button.vue";
 import { formatCurrency } from "@/lib/utils";
 import { TAX_RATE, SHIPPING_FLAT } from "@/lib/config";
-import { productsService } from "@/lib/services/products";
 import { cartService } from "@/lib/services/cart";
 import { useCartStore } from "@/store/cart";
 import { useToast } from "vue-toastification";
@@ -12,11 +11,11 @@ import { LoaderCircle } from "lucide-vue-next";
 
 const cartStore = useCartStore();
 const toast = useToast();
-const { isLoading, initializeCart } = cartStore;
+const { initializeCart } = cartStore;
 
 // Fetch initial cart data
-onMounted(() => {
-  initializeCart();
+onMounted(async () => {
+  await initializeCart();
 });
 
 const addProductToCart = async () => {
@@ -60,7 +59,7 @@ const proceedToCheckout = () => {
                 :product="product"
                 @remove="cartStore.removeProduct(product.id)"
                 @changeQty="
-                  (quantity) =>
+                  (quantity: number) =>
                     cartStore.changeProductQuantity(product.id, quantity)
                 "
               />

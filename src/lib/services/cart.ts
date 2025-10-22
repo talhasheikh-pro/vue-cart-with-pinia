@@ -3,7 +3,7 @@ import type { Product } from "../types/product";
 import { randomPrice } from "../utils";
 
 export const cartService = {
-  addProduct: async (): Promise<Product[]> => {
+  addProduct: async (): Promise<Product> => {
     // random price between 9.99 and 199.99, to 2 decimals
     const mockProduct = {
       title: "New Product",
