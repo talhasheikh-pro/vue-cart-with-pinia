@@ -1,18 +1,24 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 import type { Product } from "@/lib/types/product";
 import { formatCurrency } from "@/lib/utils";
 import { Plus, Minus, X } from "lucide-vue-next";
 
-const { product } = defineProps<{ product: Product }>();
+const props = defineProps<{ product: Product }>();
 const emit = defineEmits<{
   (e: "remove"): void;
   (e: "changeQty", qty: number): void;
 }>();
 
-const qty = computed(() => product.quantity ?? 1);
-const unitPrice = computed(() => product.price ?? 0);
+const product = toRef(props, "product");
+
+const qty = computed(() => product.value.quantity ?? 1);
+const unitPrice = computed(() => product.value.price ?? 0);
 const total = computed(() => unitPrice.value * qty.value);
+
+// pre-format for template
+const unitPriceFormatted = computed(() => formatCurrency(unitPrice.value));
+const totalFormatted = computed(() => formatCurrency(total.value));
 
 function onDecrement() {
   if (qty.value > 1) emit("changeQty", qty.value - 1);
@@ -56,16 +62,17 @@ function onRemove() {
           Rating: <span class="ml-1">{{ product.rating.rate }}</span>
         </p>
 
-        <!-- Mobile-only inline prices (keep desktop UI unchanged) -->
+        <!-- Mobile-only inline prices -->
         <div class="mt-1 space-y-0.5 md:hidden">
-          <div class="text-[13px]">Unit: {{ formatCurrency(unitPrice) }}</div>
-          <div class="text-[13px]">Total: {{ formatCurrency(total) }}</div>
+          <div class="text-[13px]">Unit: {{ unitPriceFormatted }}</div>
+          <div class="text-[13px]">Total: {{ totalFormatted }}</div>
         </div>
       </div>
     </div>
 
+    <!-- Unit price (desktop only) -->
     <span class="hidden md:block">
-      {{ formatCurrency(unitPrice) }}
+      {{ unitPriceFormatted }}
     </span>
 
     <!-- Quantity -->
@@ -94,8 +101,9 @@ function onRemove() {
       </div>
     </div>
 
+    <!-- Total (desktop only) -->
     <span class="hidden md:block">
-      {{ formatCurrency(total) }}
+      {{ totalFormatted }}
     </span>
   </div>
 </template>
